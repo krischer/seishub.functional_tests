@@ -9,39 +9,39 @@ So far it is very simple but the plan is to enhance it quite a bit.
 
 Currently only works with this SeisHub branch:
 
-[https://github.com/krischer/seishub.core/tree/granular_authorization]()
+[https://github.com/krischer/seishub.core/tree/granular_authorization](https://github.com/krischer/seishub.core/tree/granular_authorization)
 
 ### Requirements
 
-    * seishub.core
-    * setuptools
-    * colorama
+* seishub.core
+* setuptools
+* colorama
 
 ### Installation
 
-    Checkout the repository
+Checkout the repository
 
-    ```bash
-    git clone https://github.com/krischer/seishub.functional_tests
-    cd seishub.functional_tests
-    ```
+```bash
+git clone https://github.com/krischer/seishub.functional_tests
+cd seishub.functional_tests
+```
 
-    Either
+and then either
 
-    ```bash
-    python setup.py install
-    ```
+```bash
+python setup.py install
+```
 
-    or (if you prefer `pip` and have it installed)
+or (if you prefer `pip` and have it installed)
 
-    ```bash
-    pip install .
-    ```
+```bash
+pip install .
+```
 
-    should do the trick.
+should do the trick.
 
 ### Usage
 
-    ```bash
-    python -m seishub.functional_tests
-    ````
+```bash
+python -m seishub.functional_tests
+````
