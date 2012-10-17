@@ -29,10 +29,12 @@ def init_seishub_instance():
     """
     Creates a new SeisHub instance at TEST_DIRECTORY.
     """
-    print_info("Creating new SeisHub instance...")
+    print_info("Creating new SeisHub instance in %s..." % TEST_DIRECTORY)
 
     if os.path.exists(TEST_DIRECTORY):
-        shutil.rmtree(TEST_DIRECTORY)
+        msg = "SeisHub temp directory already exists."
+        print_error(msg)
+        sys.exit(1)
 
     cmd = ["seishub-admin", "initenv", TEST_DIRECTORY]
     try:
@@ -118,18 +120,20 @@ if __name__ == "__main__":
         "and HTTP response codes are tested.\n"
         "===================================================================\n"
     )
+
+    # Create a new SeisHub instance.
     init_seishub_instance()
 
-    print_info("Launching test case for initial setup...")
-    # Run the basic setup test suite.
+    print_info("Launching test case for the initial instance setup...")
     test_case_initial_installation.run()
 
+    # Launch the server.
     proc = launch_seishub_server()
 
-    print_info("Launching test case for vanilla SeisHub installation...")
-    # Run the basic setup test suite.
+    print_info("Launching test case for the vanilla SeisHub server...")
     test_case_vanilla_seishub.run()
 
+    # Stop/kill the server.
     stop_seishub_server(proc)
 
     cleanup()

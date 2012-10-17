@@ -11,6 +11,7 @@ Utility methods for the SeisHub functional test suite.
 """
 import colorama
 import os
+import tempfile
 import urllib2
 
 __all__ = ["TEST_DIRECTORY", "BIN_DIR", "DB_DIR", "AUTH_DB", "SEISHUB_DB",
@@ -21,7 +22,18 @@ colorama.init()
 
 HTTP_ACCEPTED_METHODS = ["PUT", "POST", "HEAD", "GET", "DELETE"]
 
-TEST_DIRECTORY = os.path.abspath("seishub_test_dir")
+
+def _get_installation_directory():
+    tempdir = tempfile.gettempdir()
+    if not tempdir:
+        msg = "Could not get temporary directory."
+        raise Exception(msg)
+    tempdir = os.path.abspath(os.path.join(tempdir,
+        "__temp_seishub_instance__"))
+    return tempdir
+
+TEST_DIRECTORY = _get_installation_directory()
+
 BIN_DIR = os.path.join(TEST_DIRECTORY, "bin")
 DB_DIR = os.path.join(TEST_DIRECTORY, "db")
 AUTH_DB = os.path.join(DB_DIR, "auth.db")
