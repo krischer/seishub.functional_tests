@@ -19,15 +19,18 @@ import sys
 import time
 import urllib2
 
-from utils import print_info, print_error, TEST_DIRECTORY, BIN_DIR, BASE_URL
+from utils import print_info, print_error, TEST_DIRECTORY, BIN_DIR, BASE_URL, \
+    add_user_to_seishub
 
 import test_case_vanilla_seishub
 import test_case_initial_installation
 
 
-def init_seishub_instance():
+def init_seishub_instance(debug=False):
     """
     Creates a new SeisHub instance at TEST_DIRECTORY.
+
+    :param debug: If debug is True, the output will not be catched.
     """
     print_info("Creating new SeisHub instance in %s..." % TEST_DIRECTORY)
 
@@ -38,7 +41,10 @@ def init_seishub_instance():
 
     cmd = ["seishub-admin", "initenv", TEST_DIRECTORY]
     try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        if debug is True:
+            subprocess.call(cmd)
+        else:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError, e:
         print_error("Error creating seishub instance. Exited with return "
             "code %s. Full output follows:" % (str(e.returncode)))
@@ -48,15 +54,20 @@ def init_seishub_instance():
         sys.exit(1)
 
 
-def launch_seishub_server():
+def launch_seishub_server(debug=False):
     """
     Launches the SeisHub instance, loops until the startup sequence is finished
     and returns the process object.
+
+    :param debug: If debug is True, the output will not be catched.
     """
     print_info("Starting SeisHub Server...")
 
-    proc = subprocess.Popen(os.path.join(BIN_DIR, "debug.sh"), shell=True,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if debug is True:
+        proc = subprocess.Popen(os.path.join(BIN_DIR, "debug.sh"), shell=True)
+    else:
+        proc = subprocess.Popen(os.path.join(BIN_DIR, "debug.sh"), shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # Ping the server for up to ten seconds. This should assure it has started.
     t = time.time()
@@ -121,14 +132,23 @@ if __name__ == "__main__":
         "===================================================================\n"
     )
 
+    if "debug" in sys.argv:
+        debug = True
+    else:
+        debug = False
+
     # Create a new SeisHub instance.
-    init_seishub_instance()
+    init_seishub_instance(debug=debug)
 
     print_info("Launching test case for the initial instance setup...")
     test_case_initial_installation.run()
 
+    # Add two more users. A normal one, and one with admin rights.
+    add_user_to_seishub("admin_2", "admin_pw", ["users", "admin"], "New Guy")
+    add_user_to_seishub("user", "user_pw", ["users"], "Some user")
+
     # Launch the server.
-    proc = launch_seishub_server()
+    proc = launch_seishub_server(debug=debug)
 
     print_info("Launching test case for the vanilla SeisHub server...")
     test_case_vanilla_seishub.run()

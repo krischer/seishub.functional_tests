@@ -37,6 +37,7 @@ class InitialSetupTestCase(unittest.TestCase):
         c = conn.cursor()
         c.execute("SELECT user_name, groups from users")
         users = c.fetchall()
+        conn.close()
         self.assertEqual(len(users), 1)
         admin = users[0]
         self.assertEqual(admin[0], "admin")
@@ -51,6 +52,7 @@ class InitialSetupTestCase(unittest.TestCase):
         c = conn.cursor()
         c.execute("SELECT group_name, group_owner from groups")
         groups = c.fetchall()
+        conn.close()
         self.assertEqual(len(groups), 2)
         self.assertTrue(("admin", "admin") in groups)
         self.assertTrue(("users", "admin") in groups)

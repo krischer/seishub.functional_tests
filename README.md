@@ -44,4 +44,12 @@ should do the trick.
 
 ```bash
 python -m seishub.functional_tests
-````
+```
+
+By default stdout, stderr, and stdin from the SeisHub server are caught by the
+test runner. To enable debugging, e.g. setting a trace or something similar,
+this must not be the case. Disable it with
+
+```bash
+python -m seishub.functional_tests debug
+```
