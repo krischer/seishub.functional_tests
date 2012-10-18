@@ -10,12 +10,15 @@ Utility methods for the SeisHub functional test suite.
     (http://www.gnu.org/copyleft/lesser.html)
 """
 import colorama
+import hashlib
 import os
+import sqlite3
 import tempfile
 import urllib2
 
 __all__ = ["TEST_DIRECTORY", "BIN_DIR", "DB_DIR", "AUTH_DB", "SEISHUB_DB",
-    "BASE_URL", "send_http_request", "print_info", "print_error"]
+    "BASE_URL", "send_http_request", "print_info", "print_error",
+    "add_user_to_seishub"]
 
 # Make sure it works on Windows.
 colorama.init()
@@ -109,3 +112,22 @@ def print_info(msg):
 
 def print_error(msg):
     print_log(colorama.Fore.RED, msg)
+
+
+def add_user_to_seishub(user_name, password, groups, real_name):
+    """
+    Manually adds a user to the SeisHub. This is usually only possible via the
+    webinterface.
+
+    groups should be a list of group names.
+    """
+    # The hash used here has to be the same as the one used in SeisHub!
+    password_hash = hashlib.sha224(password).hexdigest()
+    groups = ", ".join(groups)
+    conn = sqlite3.connect(AUTH_DB)
+    c = conn.cursor()
+    c.execute("INSERT INTO users (user_name, password_hash, groups, real_name,"
+        " is_active) VALUES ('%s', '%s', '%s', '%s', 1)" % (user_name,
+        password_hash, groups, real_name))
+    conn.commit()
+    conn.close()
